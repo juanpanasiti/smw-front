@@ -1,0 +1,7 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Poppins', Courier, monospace;
+}
