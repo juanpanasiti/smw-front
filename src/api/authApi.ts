@@ -1,6 +1,6 @@
-import { LoginRequest, LoginResponse } from "../types/apiTypes/auth";
-import { UserInfoResponse } from "../types/apiTypes/user";
-import apiClient from "./apiClient";
+import { LoginRequest, LoginResponse } from '../types/apiTypes/auth';
+import { UserInfoResponse } from '../types/apiTypes/user';
+import apiClient from './apiClient';
 
 export const signIn = async (userCredentials: LoginRequest): Promise<string> => {
     try {
@@ -19,11 +19,6 @@ export const signIn = async (userCredentials: LoginRequest): Promise<string> => 
 };
 
 export const currentUserInfo = async (): Promise<UserInfoResponse> => {
-    try {
-        const { data } = await apiClient.get<UserInfoResponse>('/auth/info');
-        return data
-    } catch (error) {
-        console.error(error);
-        throw new Error('Error on login');
-    }
+    const { data } = await apiClient.get<UserInfoResponse>('/auth/info');
+    return data;
 };

@@ -1,0 +1,11 @@
+.form__input:not(:placeholder-shown) + .form__label,
+.form__input:focus + .form__label{
+    transform: translateY(-12px) scale(.7);
+    transform-origin: top left;
+    color: var(--main-color);
+}
+
+.form__input:not(:placeholder-shown) ~ .form__line,
+.form__input:focus ~ .form__line{
+    transform: scale(1);
+}
