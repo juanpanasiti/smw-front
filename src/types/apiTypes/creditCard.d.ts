@@ -4,7 +4,7 @@ export interface CreditCardReq {
     main_credit_card_id?: number;
     user_id: number;
 }
-export interface CreditCardReq {
+export interface CreditCardRes {
     id: number;
     name: string;
     limit: number;

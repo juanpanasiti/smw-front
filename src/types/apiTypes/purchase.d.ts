@@ -11,8 +11,8 @@ export interface PurchaseRes {
     id: number;
     title: string;
     cc_name: string;
-    total_amount: string;
-    total_installments: string;
+    total_amount: number;
+    total_installments: number;
     purchased_at: string;
     credit_card_id: number;
     created_at: string;

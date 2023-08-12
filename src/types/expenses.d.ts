@@ -4,8 +4,8 @@ export interface Purchase {
     title: string;
     ccName: string;
     totalAmount: number;
-    totalInstallment: number;
-    purchasedAt: Date;
+    totalInstallments: number;
+    purchasedAt: string;
 }
 
 export interface Subscription {
@@ -14,6 +14,6 @@ export interface Subscription {
     title: string;
     ccName: string;
     totalAmount: number;
-    purchasedAt: Date;
+    purchasedAt: string;
     isActive: boolean;
 }
