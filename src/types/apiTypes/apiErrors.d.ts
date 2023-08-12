@@ -9,3 +9,7 @@ export interface ItemValidationError {
     // input: object;
     // url: string;
 }
+
+export interface ApiError {
+    detail: string;
+}
