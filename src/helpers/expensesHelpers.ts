@@ -1,0 +1,117 @@
+import { CreditCard } from '../types/creditCard';
+import { Expense, ExpenseFormData, Purchase, Subscription } from '../types/expenses';
+import { Payment, Period, PeriodsByValidity } from '../types/payments';
+import { compareMonthYear, formatDateToMonthYear, getFirstDayOfMonth } from './dateHelpers';
+import { defaultPeriod } from './defaultValues';
+
+export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase): Expense => {
+    // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
+    return {
+        id: purchase.id,
+        title: purchase.title,
+        type: 'purchase',
+        ccName: purchase.ccName,
+        creditCardId: creditCard.id,
+        creditCardName: creditCard.name,
+        totalAmount: purchase.totalAmount,
+        remainingAmount: purchase.totalAmount,
+        totalInstallments: purchase.totalInstallments,
+        remainingInstallment: 0, // TODO
+        purchasedAt: purchase.purchasedAt,
+        isActive: true, // Todo
+        payments: purchase.payments,
+    };
+};
+export const subscriptionToExpenseItem = (creditCard: CreditCard, subscription: Subscription): Expense => {
+    // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
+    return {
+        id: subscription.id,
+        title: subscription.title,
+        type: 'subscription',
+        ccName: subscription.ccName,
+        creditCardId: creditCard.id,
+        creditCardName: creditCard.name,
+        totalAmount: subscription.totalAmount,
+        remainingAmount: subscription.totalAmount,
+        totalInstallments: -1,
+        remainingInstallment: 0, // TODO
+        purchasedAt: subscription.purchasedAt,
+        isActive: true, // Todo
+        payments: subscription.payments,
+    };
+};
+
+// const getPaidAmount = (statements: Statement[], expenseId: number): number => {
+//     const paidAmount = 0;
+//     // TODO
+//     // statements.map(statement => {
+//     //     expense = statement.items.find(item => item.)
+//     // } )
+
+//     return paidAmount;
+// };
+
+export const getPaymentsFromExpenses = (expenses: Expense[]): Payment[] => {
+    const payments: Payment[] = [];
+    expenses.map(expense => payments.push(...expense.payments));
+    return payments;
+};
+
+export const groupByPeriod = (payments: Payment[]): Period[] => {
+    const periods: Period[] = [];
+
+    payments.map(payment => {
+        const paymentDate = getFirstDayOfMonth(payment.year, payment.month);
+        const periodName = formatDateToMonthYear(paymentDate);
+        const paymentPeriod = periods.find(period => period.name === periodName);
+        if (paymentPeriod) {
+            paymentPeriod.payments.push(payment);
+        } else {
+            periods.push({
+                name: periodName,
+                payments: [payment],
+            });
+        }
+    });
+    return periods;
+};
+
+export const groupPayments = (periods: Period[]): PeriodsByValidity => {
+    const response: PeriodsByValidity = {
+        next: [],
+        previus: [],
+        current: { ...defaultPeriod },
+    };
+
+    periods.map(period => {
+        switch (compareMonthYear(period.name)) {
+            case -1:
+                response.previus.push(period);
+                return;
+            case 0:
+                response.current = period;
+                return;
+            case 1:
+                response.next.push(period);
+                return;
+            default:
+                return;
+        }
+    });
+    return response;
+};
+
+export const expenseToForm = (expense: Expense): ExpenseFormData => {
+    return {
+        id: expense.id,
+        type: expense.type,
+        title: expense.title,
+        ccName: expense.ccName,
+        totalAmount: expense.totalAmount,
+        purchasedAt: expense.purchasedAt,
+        totalInstallments: expense.totalInstallments,
+        firstInstallment: '',
+        isActive: expense.isActive,
+        creditCardId: expense.creditCardId,
+    };
+};
