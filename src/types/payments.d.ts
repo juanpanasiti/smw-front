@@ -19,4 +19,4 @@ export interface PeriodsByValidity {
     next: Periods[];
 }
 
-export type Status = 'unconfirmed' | 'confirmed' | 'paid' | 'canceled';
+export type Status = 'unconfirmed' | 'confirmed' | 'paid' | 'canceled' | 'simulated';

@@ -14,8 +14,9 @@ export const PaymentsPage = () => {
 
     useEffect(() => {
         if (expenses.length > 0) {
+            const subscriptions = expenses.filter(exp => exp.type === 'subscription')
             const payments = getPaymentsFromExpenses(expenses)
-            const periods = groupByPeriod(payments)
+            const periods = groupByPeriod(payments, subscriptions)
             setGroupedPeriods(groupPayments(periods))
         }
     }, [expenses])

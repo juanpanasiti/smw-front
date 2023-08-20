@@ -3,6 +3,7 @@ import { Expense, ExpenseFormData, Purchase, Subscription } from '../types/expen
 import { Payment, Period, PeriodsByValidity } from '../types/payments';
 import { compareMonthYear, formatDateToMonthYear, getFirstDayOfMonth } from './dateHelpers';
 import { defaultPeriod } from './defaultValues';
+import { getId } from './messageHelpers';
 
 export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase): Expense => {
     // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
@@ -57,7 +58,7 @@ export const getPaymentsFromExpenses = (expenses: Expense[]): Payment[] => {
     return payments;
 };
 
-export const groupByPeriod = (payments: Payment[]): Period[] => {
+export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Period[] => {
     const periods: Period[] = [];
 
     payments.map(payment => {
@@ -73,6 +74,23 @@ export const groupByPeriod = (payments: Payment[]): Period[] => {
             });
         }
     });
+    periods.map(period =>{
+        subscriptions.map(sub => {
+            const payment = period.payments.find(payment => payment.expenseId === sub.id)
+            if (!payment) {
+                const [month, year] = period.name.split('/').map(Number);
+                period.payments.push({
+                    id: getId(),
+                    amount: sub.totalAmount,
+                    month,
+                    year,
+                    expenseId: sub.id,
+                    number: 0,
+                    status: 'simulated'
+                })
+            }
+        })
+    })
     return periods;
 };
 

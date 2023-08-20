@@ -30,6 +30,8 @@ export const PaymentTable = ({ payments }: Props) => {
                 return 'table-success'
             case 'canceled':
                 return 'table-danger'
+            case 'simulated':
+                return 'table-secondary'
 
             default:
                 return ''
@@ -74,8 +76,8 @@ export const PaymentTable = ({ payments }: Props) => {
                                 <td>{amount}</td>
                                 <td>
                                     <ButtonGroup aria-label="Actions">
-                                        <Button variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
-                                        <DropdownButton as={ButtonGroup} title="Status" id="bg-status-dropdown">
+                                        <Button disabled={payment.status === 'simulated'} variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
+                                        <DropdownButton disabled={payment.status === 'simulated'} as={ButtonGroup} title="Status" id="bg-status-dropdown">
                                             {payment.status !== 'unconfirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'unconfirmed' })}>Unconfirmed</Dropdown.Item>}
                                             {payment.status !== 'confirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'confirmed' })}>Confirmed</Dropdown.Item>}
                                             {payment.status !== 'paid' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'paid' })}>Paid</Dropdown.Item>}
