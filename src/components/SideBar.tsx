@@ -1,3 +1,5 @@
+import { faCreditCard, faHome, faFileInvoiceDollar, faTimeline } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components'
 
@@ -5,13 +7,16 @@ export const SideBar = () => {
 	return (
 		<StyledMainContainer>
 			<StyledNavLink to='/'>
-				{/* <House /> */} <span>Home</span>
+      <FontAwesomeIcon icon={faHome} /> <span>Home</span>
 			</StyledNavLink>
-			<StyledNavLink to='/'>
-				{/* <House /> */} <span>TCs</span>
+			<StyledNavLink to='/credit-cards/'>
+				<FontAwesomeIcon icon={faCreditCard} /> <span>TCs</span>
 			</StyledNavLink>
-			<StyledNavLink to='/'>
-				{/* <House /> */} <span>Gastos</span>
+			<StyledNavLink to='/expenses'>
+				<FontAwesomeIcon icon={faFileInvoiceDollar} /> <span>Gastos</span>
+			</StyledNavLink>
+			<StyledNavLink to='/payments'>
+				<FontAwesomeIcon icon={faTimeline} /> <span>Payments</span>
 			</StyledNavLink>
 
 		</StyledMainContainer>
@@ -26,10 +31,12 @@ const StyledMainContainer = styled.div`
   flex-direction: column;
   padding: 0.5rem;
   min-width: 4.5rem;
+  min-height: 100%;
+  row-gap: 1.0rem;
 `;
 
 const StyledNavLink = styled(NavLink)`
-  color: var(--main-color);
+  color: green;
   text-decoration: none;
   display: flex;
   flex-direction: column;
@@ -48,7 +55,7 @@ const StyledNavLink = styled(NavLink)`
 
 
   &:hover {
-    color: var(--main-color);
+    color: greenyellow;
   }
   &.active {
     font-weight: bold;

@@ -1,13 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import { authSlice } from './slices/auth';
-import { creditCardSlice } from './slices/credit_cards';
+import { creditCardSlice } from './slices/creditCards';
+import { expenseSlice } from './slices/expenses';
+import { messagesSlice } from './slices/messages/messageSlice';
 
-// TODO: Definir interface para store
 export const store = configureStore({
     reducer: {
         authState: authSlice.reducer,
         creditCardsState: creditCardSlice.reducer,
+        expensesState: expenseSlice.reducer,
+        messagesState: messagesSlice.reducer,
     },
 });
 

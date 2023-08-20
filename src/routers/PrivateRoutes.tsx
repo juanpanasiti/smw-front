@@ -1,16 +1,15 @@
-// import { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-// import { PlatformContext } from '../context/platform-context/PlatformContext';
 import { NavBar } from '../components/NavBar';
 import { SideBar } from '../components/SideBar';
-// import { currentUserInfo } from '../api/platformApi';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { useEffect } from 'react';
 import { getUserData } from '../store/slices/auth';
-import { getCCExpenses, getCreditCardList } from '../store/slices/credit_cards';
+import { getCreditCardList } from '../store/slices/creditCards';
+import { getExpenseList } from '../store/slices/expenses/thunks';
 import { Status } from '../helpers/creditCardStatusHelpers';
+import { getPaymentList } from '../store/slices/payments/thunks';
 
 interface Props {
 	children: JSX.Element;
@@ -30,10 +29,11 @@ export const PrivateRoute = ({ children }: Props) => {
 	useEffect(() => {
 		creditCards.map( cc => {
 			if (cc.status === Status.notLoaded) {
-				dispatch(getCCExpenses(cc))
+				dispatch(getExpenseList(cc))
+				// dispatch(getPaymentList(cc))
 			}
 		})
-	}, [creditCards])
+	}, [creditCards, dispatch])
 
 
 	if (!token) {
@@ -44,16 +44,23 @@ export const PrivateRoute = ({ children }: Props) => {
 		<>
 			<NavBar />
 
-			<Container>
+			<StyledContainer>
 				<SideBar />
+				<StyledContentContainer>
 				{children}
-			</Container>
+				</StyledContentContainer>
+			</StyledContainer>
 		</>
 	);
 };
 
-const Container = styled.div`
+const StyledContainer = styled.div`
   height: 100%;
   flex-grow: 1;
   display: flex;
+`;
+
+const StyledContentContainer = styled.div`
+  padding: 1rem 1.5rem;
+  width: 100%;
 `;
