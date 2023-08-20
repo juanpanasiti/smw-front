@@ -5,3 +5,8 @@
   margin: 0;
   font-family: 'Poppins', Courier, monospace;
 }
+#root{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
