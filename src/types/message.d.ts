@@ -1,4 +1,7 @@
 export interface Message {
-    id: symbol;
+    id?: number;
+    type: 'success' | 'error';
+    title: string;
+    subtitle: string;
     text: string;
 }

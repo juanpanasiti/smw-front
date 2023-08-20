@@ -1,5 +1,7 @@
 import { CreditCard } from './creditCard';
+import { Expense } from './expenses';
 import { Message } from './message';
+import { Payment } from './payments';
 import { UserProfile } from './user';
 
 //! AUTH
@@ -11,10 +13,7 @@ export interface AuthState {
 
 //! MESSAGES
 export interface MessagesState {
-    errors: Message[];
-    warnings: Message[];
-    info: Message[];
-    success: Message[];
+    messages: Message[];
 }
 
 //! CREDIT CARDS
@@ -23,32 +22,23 @@ export interface CreditCardsState {
     creditCards: CreditCard[]
 }
 
+//! EXPENSES
+export interface ExpensesState {
+    isLoading: boolean;
+    expenses: Expense[];
+}
+
+//! PAYMENTS
+export interface PaymentState {
+    isLoading: boolean;
+    payments: Payment[];
+}
+
 // //! USERS
 // export interface UsersState {
 //     isLoading: boolean;
 //     current;
 // }
 
-// //! PURCHASES
-// export interface PurchasesState {
-//     isLoading: boolean;
-//     current;
-// }
 
-// //! SUBSCRIPTIONS
-// export interface SubscriptionsState {
-//     isLoading: boolean;
-//     current;
-// }
 
-// //! STATEMENTS
-// export interface StatementsState {
-//     isLoading: boolean;
-//     current;
-// }
-
-// //! INSTALLMENTS
-// export interface InstallmentsState {
-//     isLoading: boolean;
-//     current;
-// }

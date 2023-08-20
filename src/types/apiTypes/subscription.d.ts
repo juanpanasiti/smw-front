@@ -1,3 +1,5 @@
+import { PaymentRes } from './payment';
+
 export interface SubscriptionReq {
     title: string;
     cc_name: string;
@@ -16,4 +18,5 @@ export interface SubscriptionRes {
     credit_card_id: number;
     created_at: string;
     updated_at: string;
+    payments: PaymentRes[];
 }
