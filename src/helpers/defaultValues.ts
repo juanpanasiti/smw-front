@@ -1,5 +1,5 @@
 import { Expense } from '../types/expenses';
-import { Payment, Period } from '../types/payments';
+import { Payment, Period, PeriodsByValidity } from '../types/payments';
 import { UserProfile } from '../types/user';
 import { Role } from './roleHelpers';
 
@@ -40,3 +40,9 @@ export const defaultPayment: Payment = {
     number: 0,
     status: 'unconfirmed',
 };
+
+export const defaultGroupedPeriods: PeriodsByValidity = {
+    current: {...defaultPeriod},
+    next: [],
+    previus: [],
+}

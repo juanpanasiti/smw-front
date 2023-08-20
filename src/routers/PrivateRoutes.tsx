@@ -9,7 +9,6 @@ import { getUserData } from '../store/slices/auth';
 import { getCreditCardList } from '../store/slices/creditCards';
 import { getExpenseList } from '../store/slices/expenses/thunks';
 import { Status } from '../helpers/creditCardStatusHelpers';
-import { getPaymentList } from '../store/slices/payments/thunks';
 
 interface Props {
 	children: JSX.Element;
@@ -27,10 +26,9 @@ export const PrivateRoute = ({ children }: Props) => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		creditCards.map( cc => {
+		creditCards.map(cc => {
 			if (cc.status === Status.notLoaded) {
 				dispatch(getExpenseList(cc))
-				// dispatch(getPaymentList(cc))
 			}
 		})
 	}, [creditCards, dispatch])
@@ -47,7 +45,7 @@ export const PrivateRoute = ({ children }: Props) => {
 			<StyledContainer>
 				<SideBar />
 				<StyledContentContainer>
-				{children}
+					{children}
 				</StyledContentContainer>
 			</StyledContainer>
 		</>

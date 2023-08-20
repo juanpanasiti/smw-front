@@ -4,12 +4,22 @@ import { getPaymentsFromExpenses, groupByPeriod, groupPayments } from '../helper
 import { PaymentTable } from '../components/payments/PaymentTable'
 import { PeriodGroups } from '../components/payments/PeriodGroups'
 import { sortByDate } from '../helpers/dateHelpers'
+import { useEffect, useState } from 'react'
+import { PeriodsByValidity } from '../types/payments'
+import { defaultGroupedPeriods } from '../helpers/defaultValues'
 
 export const PaymentsPage = () => {
     const expenses = useAppSelector(state => state.expensesState.expenses)
-    const payments = getPaymentsFromExpenses(expenses)
-    const periods = groupByPeriod(payments)
-    const groupedPeriods = groupPayments(periods)
+    const [groupedPeriods, setGroupedPeriods] = useState<PeriodsByValidity>({...defaultGroupedPeriods})
+
+    useEffect(() => {
+        if (expenses.length > 0) {
+            const payments = getPaymentsFromExpenses(expenses)
+            const periods = groupByPeriod(payments)
+            setGroupedPeriods(groupPayments(periods))
+        }
+    }, [expenses])
+
 
     return (
         <>
@@ -47,7 +57,7 @@ export const PaymentsPage = () => {
                 </Tab>
 
                 <Tab eventKey="next" title="Next">
-                {
+                    {
                         groupedPeriods.next.length === 0 &&
                         <p>No hay periodos posteriores</p>
                     }

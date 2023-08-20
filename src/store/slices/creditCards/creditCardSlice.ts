@@ -28,38 +28,9 @@ export const creditCardSlice = createSlice({
             if (existingIndex === -1) {
                 creditCards.push(payload);
             } else {
-                creditCards[existingIndex] = {
-                    ...payload,
-                    purchases: creditCards[existingIndex].purchases,
-                    subscriptions: creditCards[existingIndex].subscriptions,
-                    statements: creditCards[existingIndex].statements,
-                };
+                creditCards[existingIndex] = { ...payload };
             }
         },
-        // addCCPurchase: ({ creditCards }, { payload }: PayloadAction<Purchase>) => {
-        //     const creditCard = creditCards.find(cc => cc.id === payload.creditCardId);
-        //     if (!creditCard) return;
-        //     const existingIndex = creditCard.purchases.findIndex(purchase => purchase.id === payload.id);
-        //     if (existingIndex === -1) {
-        //         creditCard.purchases.push(payload);
-        //     }
-        // },
-        // addCCSubscription: ({ creditCards }, { payload }: PayloadAction<Subscription>) => {
-        //     const creditCard = creditCards.find(cc => cc.id === payload.creditCardId);
-        //     if (!creditCard) return;
-        //     const existingIndex = creditCard.subscriptions.findIndex(subscription => subscription.id === payload.id);
-        //     if (existingIndex === -1) {
-        //         creditCard.subscriptions.push(payload);
-        //     }
-        // },
-        // addCCStatement: ({ creditCards }, { payload }: PayloadAction<Statement>) => {
-        //     const creditCard = creditCards.find(cc => cc.id === payload.creditCardId);
-        //     if (!creditCard) return;
-        //     const existingIndex = creditCard.statements.findIndex(statement => statement.id === payload.id);
-        //     if (existingIndex === -1) {
-        //         creditCard.statements.push(payload);
-        //     }
-        // },
     },
 });
 

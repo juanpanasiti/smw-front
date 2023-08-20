@@ -17,8 +17,15 @@ export const ExpenseModal = ({ expense, show, handleClose }: Props) => {
 	const { creditCards } = useAppSelector(({ creditCardsState }) => creditCardsState);
 	const handleSave = async (expenseData: ExpenseFormData) => {
 		const creditCard = creditCards.find(cc => cc.id === parseInt(expenseData.creditCardId.toString()))
-		
-		if (!creditCard) return  // TODO: throw error
+		if (!creditCard){
+			dispatch(addMessage({
+				text: 'No credit card selected',
+				title: 'Credit Card Error',
+				subtitle:'',
+				type: 'error',
+			}))
+			return
+		}
 
 		try {
 			let expense: Expense
@@ -47,6 +54,12 @@ export const ExpenseModal = ({ expense, show, handleClose }: Props) => {
 			}))
 			handleClose()
 		} catch (error) {
+			dispatch(addMessage({
+				text: 'Error on saving expense',
+				title: 'Saving Error',
+				subtitle:'',
+				type: 'error',
+			}))
 			console.error(error)
 		}
 	}

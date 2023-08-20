@@ -15,7 +15,6 @@ export const ToastMessage = ({ message }: Props) => {
     const [show, setShow] = useState(true)
 
     const handleClose = () => {
-        console.log('close')
         setShow(false)
         setTimeout(() => { dispatch(delMessage(msgId)) }, 1000)
     }
