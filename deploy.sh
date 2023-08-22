@@ -12,7 +12,7 @@ npm run build
 # Verificar si se creó la carpeta dist para continuar el deploy
 if [ -d "dist" ]; then
   # Verificar si hay un proceso ocupando el puerto 5173
-  pm2 delete rda-front
+  pm2 delete smw-front
 
   # Eliminar la carpeta "prod" si existe
   if [ -d "prod" ]; then
@@ -22,5 +22,5 @@ if [ -d "dist" ]; then
   # Renombrar la carpeta "build" a "prod"
   mv dist prod
 
-  pm2 serve prod 5173 --name "rda-front" --spa  
+  pm2 serve prod 5173 --name "smw-front" --spa  
 fi
