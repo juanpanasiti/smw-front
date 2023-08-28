@@ -27,6 +27,7 @@ export const ExpenseForm = ({ expense, handleSave }: Props) => {
                             name='creditCardId'
                             onChange={(e) => handleInputChange(parseInt(e.target.value), 'creditCardId')}
                             required>
+                            <option value={0} >Select Credit Card</option>
                             {creditCards.map(cc => (
                                 <option value={cc.id} selected={formData.creditCardId === cc.id}>{cc.name}</option>
                             ))}

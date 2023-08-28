@@ -3,12 +3,13 @@ import { Expense } from '../../types/expenses';
 import { Payment, Status } from '../../types/payments'
 import { Button, ButtonGroup, Dropdown, DropdownButton, Form, Modal, Table } from 'react-bootstrap'
 import { StatusIcon } from '../shared/StatusIcon';
-import { faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { faDollarSign, faFileCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { updatePaymentAPI } from '../../api/paymentApi';
+import { createPaymentAPI, updatePaymentAPI } from '../../api/paymentApi';
 import { updatePayment } from '../../store/slices/expenses';
 import { useState } from 'react';
 import { defaultPayment } from '../../helpers/defaultValues';
+import { addMessage } from '../../store/slices/messages/messageSlice';
 interface Props {
     payments: Payment[],
 }
@@ -40,14 +41,55 @@ export const PaymentTable = ({ payments }: Props) => {
     const handleUpdate = async (payment: Payment) => {
         try {
             const updated = await updatePaymentAPI(payment)
-            dispatch(updatePayment(updated))
+            dispatch(updatePayment({
+                paymentId: payment.id,
+                payment: updated
+            }))
+            dispatch(addMessage({
+                text: 'saving success',
+                title: 'Success',
+                subtitle: '',
+                type: 'success'
+            }))
         } catch (error) {
+            dispatch(addMessage({
+                text: 'Error on saving payment',
+                title: 'Saving Error',
+                subtitle: '',
+                type: 'error',
+            }))
             console.error(error)
         }
     }
     const handleUpdateAmount = (payment: Payment) => {
         setSelectedPayment(payment)
         setShowModal(true)
+    }
+    const handleAddSubscription = async (payment: Payment) => {
+        try {
+            const created = await createPaymentAPI({
+                ...payment,
+                status: 'unconfirmed'
+            })
+            dispatch(updatePayment({
+                paymentId: payment.id,
+                payment: created
+            }))
+            dispatch(addMessage({
+                text: 'saving success',
+                title: 'Success',
+                subtitle: '',
+                type: 'success'
+            }))
+        } catch (error) {
+            dispatch(addMessage({
+                text: 'Error on saving payment',
+                title: 'Saving Error',
+                subtitle: '',
+                type: 'error',
+            }))
+            console.error(error)
+        }
     }
     return (
         <Table striped hover>
@@ -76,7 +118,11 @@ export const PaymentTable = ({ payments }: Props) => {
                                 <td>{amount}</td>
                                 <td>
                                     <ButtonGroup aria-label="Actions">
-                                        <Button disabled={payment.status === 'simulated'} variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
+                                        {
+                                            payment.status === 'simulated' ?
+                                                <Button variant="primary" onClick={() => handleAddSubscription(payment)}><FontAwesomeIcon icon={faFileCirclePlus} /></Button> :
+                                                <Button variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
+                                        }
                                         <DropdownButton disabled={payment.status === 'simulated'} as={ButtonGroup} title="Status" id="bg-status-dropdown">
                                             {payment.status !== 'unconfirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'unconfirmed' })}>Unconfirmed</Dropdown.Item>}
                                             {payment.status !== 'confirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'confirmed' })}>Confirmed</Dropdown.Item>}
@@ -97,13 +143,13 @@ export const PaymentTable = ({ payments }: Props) => {
 interface ModalProps {
     show: boolean,
     handleClose: () => void,
-    updateAmount: (payment:Payment) => void,
+    updateAmount: (payment: Payment) => void,
     payment: Payment,
 }
 const AmountUpdateModal = ({ show, handleClose, payment, updateAmount }: ModalProps) => {
     const [amount, setAmount] = useState<number>(payment.amount)
     const handleSave = () => {
-        updateAmount({...payment,amount})
+        updateAmount({ ...payment, amount })
         handleClose()
     }
     return (

@@ -1,7 +1,7 @@
 import { CreditCard } from '../types/creditCard';
 import { Expense, ExpenseFormData, Purchase, Subscription } from '../types/expenses';
 import { Payment, Period, PeriodsByValidity } from '../types/payments';
-import { compareMonthYear, formatDateToMonthYear, getFirstDayOfMonth } from './dateHelpers';
+import { compareMonthYear, formatDateToMonthYear, formatDateToYearMonthDay, getFirstDayOfMonth } from './dateHelpers';
 import { defaultPeriod } from './defaultValues';
 import { getId } from './messageHelpers';
 
@@ -74,9 +74,9 @@ export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Pe
             });
         }
     });
-    periods.map(period =>{
+    periods.map(period => {
         subscriptions.map(sub => {
-            const payment = period.payments.find(payment => payment.expenseId === sub.id)
+            const payment = period.payments.find(payment => payment.expenseId === sub.id);
             if (!payment) {
                 const [month, year] = period.name.split('/').map(Number);
                 period.payments.push({
@@ -86,11 +86,11 @@ export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Pe
                     year,
                     expenseId: sub.id,
                     number: 0,
-                    status: 'simulated'
-                })
+                    status: 'simulated',
+                });
             }
-        })
-    })
+        });
+    });
     return periods;
 };
 
@@ -120,7 +120,7 @@ export const groupPayments = (periods: Period[]): PeriodsByValidity => {
 };
 
 export const expenseToForm = (expense: Expense): ExpenseFormData => {
-    return {
+    const formData: ExpenseFormData = {
         id: expense.id,
         type: expense.type,
         title: expense.title,
@@ -132,4 +132,15 @@ export const expenseToForm = (expense: Expense): ExpenseFormData => {
         isActive: expense.isActive,
         creditCardId: expense.creditCardId,
     };
+
+    if (formData.id === 0) {
+        const today = new Date();
+        today.setMonth(today.getMonth());
+        formData.purchasedAt = formatDateToYearMonthDay(today);
+        formData.firstInstallment = formatDateToYearMonthDay(getFirstDayOfMonth(today.getFullYear(), today.getMonth() + 2));
+        formData.totalInstallments = 1
+        formData.type = 'purchase'
+    }
+
+    return formData;
 };

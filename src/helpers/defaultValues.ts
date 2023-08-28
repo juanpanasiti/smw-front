@@ -1,6 +1,8 @@
+import { CreditCard } from '../types/creditCard';
 import { Expense } from '../types/expenses';
 import { Payment, Period, PeriodsByValidity } from '../types/payments';
 import { UserProfile } from '../types/user';
+import { Status } from './creditCardStatusHelpers';
 import { Role } from './roleHelpers';
 
 export const defaultUserProfile: UserProfile = {
@@ -42,7 +44,15 @@ export const defaultPayment: Payment = {
 };
 
 export const defaultGroupedPeriods: PeriodsByValidity = {
-    current: {...defaultPeriod},
+    current: { ...defaultPeriod },
     next: [],
     previus: [],
-}
+};
+
+export const defaultCreditCard: CreditCard = {
+    id: 0,
+    limit: 0,
+    name: '',
+    status: Status.notLoaded,
+    userId: 0,
+};
