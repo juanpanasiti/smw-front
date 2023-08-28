@@ -1,21 +1,29 @@
 import styled from 'styled-components';
-import { ListGroup, Tab, Tabs } from "react-bootstrap"
+import { Button, ButtonGroup, ListGroup, Tab, Tabs } from "react-bootstrap"
 import { CreditCard } from "../../types/creditCard"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBalanceScale, faFileInvoiceDollar } from "@fortawesome/free-solid-svg-icons";
+import { faBalanceScale, faEye, faFileInvoiceDollar, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from '../../hooks/reduxHooks';
 
 
 interface Props {
     creditCard: CreditCard
+    handleShow: (creditCard: CreditCard) => void
 }
-export const CreditCardInfo = ({ creditCard }: Props) => {
-    const expenses = useAppSelector(({expensesState}) => expensesState.expenses.filter(exp => exp.creditCardId === creditCard.id))
-    // Info tab
+export const CreditCardInfo = ({ creditCard, handleShow }: Props) => {
+    const expenses = useAppSelector(({ expensesState }) => expensesState.expenses.filter(exp => exp.creditCardId === creditCard.id))
     const subscriptions = expenses.filter(exp => exp.type === 'subscription')
-    const purchases = expenses.filter(exp => exp.type === 'subscription')
-    // const closingDate = '---'
-    // const expirationDate = '---'
+    const purchases = expenses.filter(exp => exp.type === 'purchase')
+
+    const calcAvailable = (): string => {
+        const purchasesAmount = purchases.reduce((sum, expense) => {
+            return sum + expense.payments
+                .filter(payment => payment.status === 'confirmed' || payment.status === 'unconfirmed')
+                .reduce((paymentSum, payment) => paymentSum + payment.amount, 0);
+        }, 0)
+
+        return (creditCard.limit - purchasesAmount).toFixed(2)
+    }
 
     return (
         <StyledContainer>
@@ -35,7 +43,7 @@ export const CreditCardInfo = ({ creditCard }: Props) => {
                             </StyledRowDataTitle>
                             <StyledRowDataBody>
                                 <span><b>Limit: </b>${creditCard.limit}</span>
-                                <span><b>Available: </b>${creditCard.limit}</span>
+                                <span><b>Available: </b>${calcAvailable()}</span>
                             </StyledRowDataBody>
                         </StyledRowData>
                         <StyledRowData>
@@ -48,16 +56,25 @@ export const CreditCardInfo = ({ creditCard }: Props) => {
                                 <span><b>Purchases: </b>{purchases.length}</span>
                             </StyledRowDataBody>
                         </StyledRowData>
-                        {/* <StyledRowData>
+                        <StyledRowData>
                             <StyledRowDataTitle>
-                                <FontAwesomeIcon icon={faBalanceScale} />
-                                <span>Dates</span>
+                                <FontAwesomeIcon icon={faEye} />
+                                <span>Actions</span>
                             </StyledRowDataTitle>
                             <StyledRowDataBody>
-                                <span><b>Closing date: </b>{closingDate}</span>
-                                <span><b>Exp. date: </b>${expirationDate}</span>
+                                <ButtonGroup aria-label="Basic example">
+                                    <Button variant="outline-info">
+                                        <FontAwesomeIcon icon={faEye} />
+                                    </Button>
+                                    <Button variant="outline-warning">
+                                        <FontAwesomeIcon icon={faPenToSquare} onClick={() => handleShow(creditCard)} />
+                                    </Button>
+                                    <Button variant="outline-danger">
+                                        <FontAwesomeIcon icon={faTrashCan} />
+                                    </Button>
+                                </ButtonGroup>
                             </StyledRowDataBody>
-                        </StyledRowData> */}
+                        </StyledRowData>
                     </ListGroup>
                 </Tab>
 

@@ -5,6 +5,12 @@ export const formatDateToMonthYear = (date: Date): string => {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     return `${month}/${year}`;
 };
+export const formatDateToYearMonthDay = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = (date.getDate()).toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 export const getLastDayOfMonth = (year: number, month: number): Date => {
     return new Date(year, month, 0);

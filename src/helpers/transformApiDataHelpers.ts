@@ -1,4 +1,4 @@
-import { CreditCardRes } from '../types/apiTypes/creditCard';
+import { CreditCardReq, CreditCardRes } from '../types/apiTypes/creditCard';
 import { PaymentReq, PaymentRes } from '../types/apiTypes/payment';
 import { PurchaseReq, PurchaseRes } from '../types/apiTypes/purchase';
 import { SubscriptionReq, SubscriptionRes } from '../types/apiTypes/subscription';
@@ -13,9 +13,23 @@ export const transformCreditCardFromAPI = (apiData: CreditCardRes): CreditCard =
         id: apiData.id,
         name: apiData.name,
         limit: apiData.limit,
+        userId: apiData.user_id,
     };
     if (apiData.main_credit_card_id) {
         transformedData.mainCreditCardId = apiData.main_credit_card_id;
+    }
+    return transformedData;
+};
+export const transformCreditCardToAPI = (apiData: CreditCard): CreditCardReq => {
+    const transformedData: CreditCardReq = {
+        name: apiData.name,
+        limit: apiData.limit,
+    };
+    if (apiData.mainCreditCardId) {
+        transformedData.main_credit_card_id = apiData.mainCreditCardId;
+    }
+    if (apiData.userId) {
+        transformedData.user_id = apiData.userId;
     }
     return transformedData;
 };
@@ -72,7 +86,7 @@ export const transformSubscriptionToAPI = (data: ExpenseFormData): SubscriptionR
         credit_card_id: data.creditCardId,
         is_active: data.isActive,
     };
-    
+
     return transformedData;
 };
 

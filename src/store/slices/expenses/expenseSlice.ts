@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { ExpensesState } from '../../../types/reducers';
 import { Expense } from '../../../types/expenses';
-import { Payment } from '../../../types/payments';
+import { PaymentUpdated } from '../../../types/payments';
 
 const initialState: ExpensesState = {
     isLoading: false,
@@ -33,12 +33,12 @@ export const expenseSlice = createSlice({
                 };
             }
         },
-        updatePayment: ({ expenses }, { payload }: PayloadAction<Payment>) => {
-            const expense = expenses.find(exp => exp.id === payload.expenseId)
+        updatePayment: ({ expenses }, { payload }: PayloadAction<PaymentUpdated>) => {
+            const expense = expenses.find(exp => exp.id === payload.payment.expenseId)
             if (expense) {
                 expense.payments = expense.payments.map(payment => {
-                    if (payment.id === payload.id) {
-                        return payload
+                    if (payment.id === payload.paymentId) {
+                        return payload.payment
                     }
                     return payment
                 })

@@ -1,8 +1,9 @@
 import { CreditCard } from '../types/creditCard';
 import { Expense, ExpenseFormData, Purchase, Subscription } from '../types/expenses';
 import { Payment, Period, PeriodsByValidity } from '../types/payments';
-import { compareMonthYear, formatDateToMonthYear, getFirstDayOfMonth } from './dateHelpers';
+import { compareMonthYear, formatDateToMonthYear, formatDateToYearMonthDay, getFirstDayOfMonth } from './dateHelpers';
 import { defaultPeriod } from './defaultValues';
+import { getId } from './messageHelpers';
 
 export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase): Expense => {
     // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
@@ -57,7 +58,7 @@ export const getPaymentsFromExpenses = (expenses: Expense[]): Payment[] => {
     return payments;
 };
 
-export const groupByPeriod = (payments: Payment[]): Period[] => {
+export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Period[] => {
     const periods: Period[] = [];
 
     payments.map(payment => {
@@ -72,6 +73,23 @@ export const groupByPeriod = (payments: Payment[]): Period[] => {
                 payments: [payment],
             });
         }
+    });
+    periods.map(period => {
+        subscriptions.map(sub => {
+            const payment = period.payments.find(payment => payment.expenseId === sub.id);
+            if (!payment) {
+                const [month, year] = period.name.split('/').map(Number);
+                period.payments.push({
+                    id: getId(),
+                    amount: sub.totalAmount,
+                    month,
+                    year,
+                    expenseId: sub.id,
+                    number: 0,
+                    status: 'simulated',
+                });
+            }
+        });
     });
     return periods;
 };
@@ -102,7 +120,7 @@ export const groupPayments = (periods: Period[]): PeriodsByValidity => {
 };
 
 export const expenseToForm = (expense: Expense): ExpenseFormData => {
-    return {
+    const formData: ExpenseFormData = {
         id: expense.id,
         type: expense.type,
         title: expense.title,
@@ -114,4 +132,15 @@ export const expenseToForm = (expense: Expense): ExpenseFormData => {
         isActive: expense.isActive,
         creditCardId: expense.creditCardId,
     };
+
+    if (formData.id === 0) {
+        const today = new Date();
+        today.setMonth(today.getMonth());
+        formData.purchasedAt = formatDateToYearMonthDay(today);
+        formData.firstInstallment = formatDateToYearMonthDay(getFirstDayOfMonth(today.getFullYear(), today.getMonth() + 2));
+        formData.totalInstallments = 1
+        formData.type = 'purchase'
+    }
+
+    return formData;
 };

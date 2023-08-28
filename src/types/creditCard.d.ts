@@ -6,4 +6,5 @@ export interface CreditCard {
     mainCreditCardId?: number;
     name: string;
     limit: number;
+    userId: number;
 }
