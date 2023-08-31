@@ -7,17 +7,33 @@ import { faDollarSign, faFileCirclePlus } from '@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createPaymentAPI, updatePaymentAPI } from '../../api/paymentApi';
 import { updatePayment } from '../../store/slices/expenses';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { defaultPayment } from '../../helpers/defaultValues';
 import { addMessage } from '../../store/slices/messages/messageSlice';
+import { CreditCard } from '../../types/creditCard';
+import { PaymentSummary } from './PaymentSummary';
 interface Props {
     payments: Payment[],
 }
 export const PaymentTable = ({ payments }: Props) => {
     const { expenses } = useAppSelector(({ expensesState }) => expensesState);
+    const { creditCards } = useAppSelector(({ creditCardsState }) => creditCardsState);
     const dispatch = useAppDispatch()
     const [showModal, setShowModal] = useState(false)
     const [selectedPayment, setSelectedPayment] = useState<Payment>({ ...defaultPayment })
+    const [filteredPayments, setFilteredPayments] = useState<Payment[]>([])
+    const [selectedCreditCard, setSelectedCreditCard] = useState<CreditCard | undefined>(undefined)
+
+    useEffect(() => {
+        if (selectedCreditCard === undefined) {
+            setFilteredPayments(payments)
+        } else {
+            setFilteredPayments(payments.filter(payment => findExpense(payment)?.creditCardId === selectedCreditCard.id))
+        }
+    }, [payments, selectedCreditCard])
+
+
+
     const findExpense = (payment: Payment): Expense | undefined => {
         return expenses.find(expense => expense.id === payment.expenseId)
     }
@@ -91,52 +107,63 @@ export const PaymentTable = ({ payments }: Props) => {
             console.error(error)
         }
     }
+    const handleCreditCardSelected = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const ccId = parseInt(e.target.value)
+        setSelectedCreditCard(creditCards.find(cc => cc.id === ccId)) 
+    }
+
     return (
-        <Table striped hover>
-            <thead>
-                <tr>
-                    <th>Credit Card</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Fee</th>
-                    <th>Amount</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    payments.map(payment => {
-                        const expense = findExpense(payment)
-                        const fee = expense?.type === 'purchase' ? `${payment.number}/${expense?.totalInstallments}` : '---'
-                        const amount = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(payment.amount)
-                        return (
-                            <tr key={payment.id} className={getStatusClassName(payment.status)}>
-                                <td>{expense?.creditCardName}</td>
-                                <td>{expense?.title}</td>
-                                <td><StatusIcon status={payment.status} /></td>
-                                <td>{fee}</td>
-                                <td>{amount}</td>
-                                <td>
-                                    <ButtonGroup aria-label="Actions">
-                                        {
-                                            payment.status === 'simulated' ?
-                                                <Button variant="primary" onClick={() => handleAddSubscription(payment)}><FontAwesomeIcon icon={faFileCirclePlus} /></Button> :
-                                                <Button variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
-                                        }
-                                        <DropdownButton disabled={payment.status === 'simulated'} as={ButtonGroup} title="Status" id="bg-status-dropdown">
-                                            {payment.status !== 'unconfirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'unconfirmed' })}>Unconfirmed</Dropdown.Item>}
-                                            {payment.status !== 'confirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'confirmed' })}>Confirmed</Dropdown.Item>}
-                                            {payment.status !== 'paid' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'paid' })}>Paid</Dropdown.Item>}
-                                        </DropdownButton>
-                                    </ButtonGroup>
-                                </td>
-                            </tr>
-                        )
-                    })
-                }
-            </tbody>
-            <AmountUpdateModal show={showModal} handleClose={() => setShowModal(false)} payment={selectedPayment} updateAmount={handleUpdate} />
-        </Table>
+        <>
+            {/* Select Credit Card */}
+            <PaymentSummary creditCards={creditCards} payments={filteredPayments} handleChange={handleCreditCardSelected} />
+
+            {/* Table */}
+            <Table striped hover>
+                <thead>
+                    <tr>
+                        <th>Credit Card</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Fee</th>
+                        <th>Amount</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        filteredPayments.map(payment => {
+                            const expense = findExpense(payment)
+                            const fee = expense?.type === 'purchase' ? `${payment.number}/${expense?.totalInstallments}` : '---'
+                            const amount = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(payment.amount)
+                            return (
+                                <tr key={payment.id} className={getStatusClassName(payment.status)}>
+                                    <td>{expense?.creditCardName}</td>
+                                    <td>{expense?.title}</td>
+                                    <td><StatusIcon status={payment.status} /></td>
+                                    <td>{fee}</td>
+                                    <td>{amount}</td>
+                                    <td>
+                                        <ButtonGroup aria-label="Actions">
+                                            {
+                                                payment.status === 'simulated' ?
+                                                    <Button variant="primary" onClick={() => handleAddSubscription(payment)}><FontAwesomeIcon icon={faFileCirclePlus} /></Button> :
+                                                    <Button variant="success" onClick={() => handleUpdateAmount(payment)}><FontAwesomeIcon icon={faDollarSign} /></Button>
+                                            }
+                                            <DropdownButton disabled={payment.status === 'simulated'} as={ButtonGroup} title="Status" id="bg-status-dropdown">
+                                                {payment.status !== 'unconfirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'unconfirmed' })}>Unconfirmed</Dropdown.Item>}
+                                                {payment.status !== 'confirmed' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'confirmed' })}>Confirmed</Dropdown.Item>}
+                                                {payment.status !== 'paid' && <Dropdown.Item onClick={() => handleUpdate({ ...payment, status: 'paid' })}>Paid</Dropdown.Item>}
+                                            </DropdownButton>
+                                        </ButtonGroup>
+                                    </td>
+                                </tr>
+                            )
+                        })
+                    }
+                </tbody>
+                <AmountUpdateModal show={showModal} handleClose={() => setShowModal(false)} payment={selectedPayment} updateAmount={handleUpdate} />
+            </Table>
+        </>
     )
 }
 

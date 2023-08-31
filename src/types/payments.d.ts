@@ -9,8 +9,8 @@ export interface Payment {
 }
 
 export interface PaymentUpdated {
-    paymentId: number,
-    payment: Payment
+    paymentId: number;
+    payment: Payment;
 }
 
 export interface Period {
@@ -20,8 +20,13 @@ export interface Period {
 
 export interface PeriodsByValidity {
     current: Period;
-    previus: Periods[];
-    next: Periods[];
+    previus: Period[];
+    next: Period[];
+}
+
+export interface PeriodDataSet {
+    name: string;
+    totalAmount: number;
 }
 
 export type Status = 'unconfirmed' | 'confirmed' | 'paid' | 'canceled' | 'simulated';
