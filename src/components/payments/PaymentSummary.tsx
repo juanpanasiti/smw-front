@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { CreditCard } from '../../types/creditCard'
 import { Payment } from '../../types/payments'
 import { useEffect, useState } from 'react'
+import { calcPaymentsSum } from '../../helpers/expensesHelpers';
 
 interface Props {
     payments: Payment[],
@@ -14,13 +15,11 @@ export const PaymentSummary = ({ payments, creditCards, handleChange }: Props) =
     const [totalAmount, setTotalAmount] = useState(0)
     const [totalConfirmed, setTotalConfirmed] = useState(0)
     useEffect(() => {
-        setTotalAmount(
-            payments.reduce<number>((subtotal, payment) => subtotal + payment.amount, 0)
-        )
+        setTotalAmount(calcPaymentsSum(payments))
         setTotalConfirmed(
-            payments
-                .filter(payment => payment.status === 'confirmed' || payment.status === 'paid')
-                .reduce<number>((subtotal, payment) => subtotal + payment.amount, 0)
+            calcPaymentsSum(
+                payments.filter(payment => payment.status === 'confirmed' || payment.status === 'paid')
+            )
         )
 
     }, [payments])

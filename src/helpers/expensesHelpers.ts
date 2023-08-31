@@ -42,16 +42,6 @@ export const subscriptionToExpenseItem = (creditCard: CreditCard, subscription: 
     };
 };
 
-// const getPaidAmount = (statements: Statement[], expenseId: number): number => {
-//     const paidAmount = 0;
-//     // TODO
-//     // statements.map(statement => {
-//     //     expense = statement.items.find(item => item.)
-//     // } )
-
-//     return paidAmount;
-// };
-
 export const getPaymentsFromExpenses = (expenses: Expense[]): Payment[] => {
     const payments: Payment[] = [];
     expenses.map(expense => payments.push(...expense.payments));
@@ -138,9 +128,13 @@ export const expenseToForm = (expense: Expense): ExpenseFormData => {
         today.setMonth(today.getMonth());
         formData.purchasedAt = formatDateToYearMonthDay(today);
         formData.firstInstallment = formatDateToYearMonthDay(getFirstDayOfMonth(today.getFullYear(), today.getMonth() + 2));
-        formData.totalInstallments = 1
-        formData.type = 'purchase'
+        formData.totalInstallments = 1;
+        formData.type = 'purchase';
     }
 
     return formData;
+};
+
+export const calcPaymentsSum = (payments: Payment[]): number => {
+    return payments.reduce<number>((subtotal, payment) => subtotal + payment.amount, 0);
 };
