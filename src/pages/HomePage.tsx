@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import 'chart.js/auto';
-import { Chart, ChartProps } from 'react-chartjs-2';
+import { Chart } from 'react-chartjs-2';
 import { useGroupedPeriods } from "../hooks/useGroupedPeriods";
 import { PeriodDataSet } from "../types/payments";
-import { ContextProxy } from "chart.js/helpers";
+// import { ContextProxy } from "chart.js/helpers";
 
 
 export const HomePage = () => {
@@ -23,7 +23,7 @@ export const HomePage = () => {
 			labels: periodsDataSet.map(period => period.name),
 			datasets: [
 				getDataSet(periodsDataSet),
-			]
+			],
 		})
 	}, [periodsDataSet])
 
@@ -44,7 +44,8 @@ const getDataSet = (periodsDataSet: PeriodDataSet[]) => {
 	return {
 		label: 'Payments',
 		data: periodsDataSet.map(period => period.totalAmount),
-		backgroundColor: (context:ContextProxy) => context.raw > 250000 ? 'red' : 'green',
+		// backgroundColor: (context:ContextProxy) => {return context.raw > 250000 ? '#9BD0F5' : '#9BD0F5'},
+		backgroundColor: '#9BD0F5',
 		borderColor: 'black',
 		borderWidth: 1,
 	}
