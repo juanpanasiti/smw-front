@@ -66,7 +66,7 @@ export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Pe
     });
     periods.map(period => {
         subscriptions.map(sub => {
-            const payment = period.payments.find(payment => payment.expenseId === sub.id);
+            const payment = period.payments.find(payment => payment.status !== 'simulated' && payment.expenseId === sub.id);
             if (!payment) {
                 const [month, year] = period.name.split('/').map(Number);
                 period.payments.push({
@@ -137,4 +137,8 @@ export const expenseToForm = (expense: Expense): ExpenseFormData => {
 
 export const calcPaymentsSum = (payments: Payment[]): number => {
     return payments.reduce<number>((subtotal, payment) => subtotal + payment.amount, 0);
+};
+
+export const findExpense = (expenses: Expense[], payment: Payment): Expense | undefined => {
+    return expenses.find(expense => expense.id === payment.expenseId);
 };

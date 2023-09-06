@@ -25,7 +25,7 @@ export const LoginPage = () => {
 	return (
 		<Container>
 			<Form onSubmit={(e) => handleLogin(e)}>
-				<FormTitle>Inicia Sesión</FormTitle>
+				<FormTitle>Login</FormTitle>
 				<FormContainer>
 					<FormGroup>
 						<FormInput
