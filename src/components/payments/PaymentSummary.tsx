@@ -5,6 +5,7 @@ import { CreditCard } from '../../types/creditCard';
 import { Payment } from '../../types/payments';
 import { useEffect, useState } from 'react';
 import { calcPaymentsSum } from '../../helpers/expensesHelpers';
+import { formatCurrency } from '../../helpers/currencyHelpers';
 
 interface Props {
     payments: Payment[];
@@ -37,10 +38,10 @@ export const PaymentSummary = ({ payments, creditCards, handleChange }: Props) =
             </Col>
             <StyledTotalContainer xs={12} sm={6} md={8} lg={4} xl={6}>
                 <div>
-                    <span>Total:</span> {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(totalAmount)}
+                    <span>Total:</span> {formatCurrency(totalAmount)}
                 </div>
                 <div>
-                    <span>Total confirmado:</span> {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(totalConfirmed)}
+                    <span>Total confirmado:</span> {formatCurrency(totalConfirmed)}
                 </div>
             </StyledTotalContainer>
         </StyledRow>
