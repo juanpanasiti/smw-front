@@ -7,6 +7,8 @@ import { getId } from './messageHelpers';
 
 export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase): Expense => {
     // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
+    const remainingAmount = purchase.totalAmount - purchase.payments.reduce((sum, payment) => (payment.status == 'paid' ? sum + payment.amount : sum), 0);
+    const remainingInstallment = purchase.totalInstallments - purchase.payments.reduce((sum, payment) => (payment.status == 'paid' ? sum + 1 : sum), 0);
     return {
         id: purchase.id,
         title: purchase.title,
@@ -15,11 +17,11 @@ export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase)
         creditCardId: creditCard.id,
         creditCardName: creditCard.name,
         totalAmount: purchase.totalAmount,
-        remainingAmount: purchase.totalAmount,
+        remainingAmount: remainingAmount,
         totalInstallments: purchase.totalInstallments,
-        remainingInstallment: 0, // TODO
+        remainingInstallment: remainingInstallment,
         purchasedAt: purchase.purchasedAt,
-        isActive: true, // Todo
+        isActive: remainingInstallment !== 0,
         payments: purchase.payments,
     };
 };
