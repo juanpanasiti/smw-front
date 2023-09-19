@@ -1,6 +1,7 @@
 import { Accordion } from 'react-bootstrap'
 import { Payment, Period } from '../../types/payments'
 import { PaymentTable } from './PaymentTable'
+import { formatCurrency } from '../../helpers/currencyHelpers'
 
 interface Props {
     periods: Period[]
@@ -9,7 +10,7 @@ interface Props {
 export const PeriodGroups = ({ periods }: Props) => {
     const sumPayments = (payments: Payment[]):string => {
         const sum = payments.reduce((sum, payment) => sum + payment.amount, 0)
-        return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(sum)
+        return formatCurrency(sum)
     }
     return (
         <Accordion>

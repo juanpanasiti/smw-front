@@ -12,6 +12,7 @@ import { addMessage } from '../../store/slices/messages/messageSlice';
 import { CreditCard } from '../../types/creditCard';
 import { PaymentSummary } from './PaymentSummary';
 import { findExpense } from '../../helpers/expensesHelpers';
+import { formatCurrency } from '../../helpers/currencyHelpers';
 interface Props {
     payments: Payment[];
 }
@@ -162,7 +163,7 @@ export const PaymentTable = ({ payments }: Props) => {
                     {filteredPayments.map(payment => {
                         const expense = findExpense(expenses, payment);
                         const fee = expense?.type === 'purchase' ? `${payment.number}/${expense?.totalInstallments}` : '---';
-                        const amount = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(payment.amount);
+                        const amount = formatCurrency(payment.amount);
                         return (
                             <tr key={payment.id} className={getStatusClassName(payment.status)}>
                                 <td>{expense?.creditCardName}</td>
