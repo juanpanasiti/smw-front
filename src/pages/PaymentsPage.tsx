@@ -31,7 +31,7 @@ export const PaymentsPage = () => {
                     }
                 </Tab>
 
-                <Tab eventKey="current" title="Current">
+                <Tab eventKey="current" title={`Current (${groupedPeriods.current.name})`}>
                     {
                         groupedPeriods.current.name !== "" &&
                         <PaymentTable payments={groupedPeriods.current.payments} />

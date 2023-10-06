@@ -13,8 +13,10 @@ export interface PaymentUpdated {
     payment: Payment;
 }
 
+export type PeriodStatus =  'open' | 'closed' | 'paid'
 export interface Period {
     name: string;
+    status: PeriodStatus
     payments: Payment[];
 }
 
