@@ -4,6 +4,7 @@ import { CreditCard } from "../../types/creditCard"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBalanceScale, faEye, faFileInvoiceDollar, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from '../../hooks/reduxHooks';
+import { selectCreditCardExpenses } from '../../helpers/selector.helpers';
 
 
 interface Props {
@@ -11,7 +12,8 @@ interface Props {
     handleShow: (creditCard: CreditCard) => void
 }
 export const CreditCardInfo = ({ creditCard, handleShow }: Props) => {
-    const expenses = useAppSelector(({ expensesState }) => expensesState.expenses.filter(exp => exp.creditCardId === creditCard.id))
+    // const expenses = useAppSelector(({ expensesState }) => expensesState.expenses.filter(exp => exp.creditCardId === creditCard.id))
+    const expenses = useAppSelector((state) => selectCreditCardExpenses({...state, ...creditCard}))
     const subscriptions = expenses.filter(exp => exp.type === 'subscription')
     const purchases = expenses.filter(exp => exp.type === 'purchase')
 
