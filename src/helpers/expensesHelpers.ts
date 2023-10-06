@@ -1,7 +1,7 @@
 import { CreditCard } from '../types/creditCard';
 import { Expense, ExpenseFormData, Purchase, Subscription } from '../types/expenses';
-import { Payment, Period, PeriodsByValidity } from '../types/payments';
-import { compareMonthYear, formatDateToMonthYear, formatDateToYearMonthDay, getFirstDayOfMonth } from './dateHelpers';
+import { Payment, Period, PeriodStatus, PeriodsByValidity } from '../types/payments';
+import { formatDateToMonthYear, formatDateToYearMonthDay, getFirstDayOfMonth, sortByDate } from './dateHelpers';
 import { defaultPeriod } from './defaultValues';
 import { getId } from './messageHelpers';
 
@@ -25,6 +25,7 @@ export const purchseToExpenseItem = (creditCard: CreditCard, purchase: Purchase)
         payments: purchase.payments,
     };
 };
+
 export const subscriptionToExpenseItem = (creditCard: CreditCard, subscription: Subscription): Expense => {
     // const paidAmount = getPaidAmount(creditCard.statements, purchase.id);
     return {
@@ -53,7 +54,7 @@ export const getPaymentsFromExpenses = (expenses: Expense[]): Payment[] => {
 export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Period[] => {
     const periods: Period[] = [];
 
-    payments.map(payment => {
+    payments.forEach(payment => {
         const paymentDate = getFirstDayOfMonth(payment.year, payment.month);
         const periodName = formatDateToMonthYear(paymentDate);
         const paymentPeriod = periods.find(period => period.name === periodName);
@@ -62,12 +63,13 @@ export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Pe
         } else {
             periods.push({
                 name: periodName,
+                status: 'open',
                 payments: [payment],
             });
         }
     });
-    periods.map(period => {
-        subscriptions.map(sub => {
+    periods.forEach(period => {
+        subscriptions.forEach(sub => {
             const payment = period.payments.find(payment => payment.status !== 'simulated' && payment.expenseId === sub.id);
             if (!payment) {
                 const [month, year] = period.name.split('/').map(Number);
@@ -83,32 +85,40 @@ export const groupByPeriod = (payments: Payment[], subscriptions: Expense[]): Pe
             }
         });
     });
+    periods.forEach(period => {
+        period.status = getPeriodStatus(period.payments)
+    });
     return periods;
 };
 
 export const groupPayments = (periods: Period[]): PeriodsByValidity => {
-    const response: PeriodsByValidity = {
-        next: [],
-        previus: [],
-        current: { ...defaultPeriod },
-    };
+    const previusPeriods: Period[] = [];
+    let currentPeriod: Period = {...defaultPeriod}
+    const nextPeriods: Period[] = [];
 
-    periods.map(period => {
-        switch (compareMonthYear(period.name)) {
-            case -1:
-                response.previus.push(period);
+    periods.sort(sortByDate);
+    periods.forEach(period => {
+        switch (period.status) {
+            case 'paid':
+                previusPeriods.push(period);
                 return;
-            case 0:
-                response.current = period;
-                return;
-            case 1:
-                response.next.push(period);
+            case 'closed':
+            case 'open':
+                if(currentPeriod.name === ''){
+                    currentPeriod = period;
+                } else {
+                    nextPeriods.push(period);
+                }
                 return;
             default:
                 return;
         }
     });
-    return response;
+    return {
+        previus: previusPeriods,
+        current: currentPeriod,
+        next: nextPeriods,
+    };
 };
 
 export const expenseToForm = (expense: Expense): ExpenseFormData => {
@@ -144,3 +154,17 @@ export const calcPaymentsSum = (payments: Payment[]): number => {
 export const findExpense = (expenses: Expense[], payment: Payment): Expense | undefined => {
     return expenses.find(expense => expense.id === payment.expenseId);
 };
+
+export const getPeriodStatus = (payments: Payment[]): PeriodStatus => {
+    if (payments.length === 0) {
+        return 'closed';
+    }
+    if (payments.some(payment => payment.status === 'unconfirmed' || payment.status === 'simulated')) {
+        return 'open';
+    }
+    if (payments.some(payment => payment.status === 'paid' || payment.status === 'canceled')) {
+        return 'paid';
+    }
+    return 'closed';
+
+}

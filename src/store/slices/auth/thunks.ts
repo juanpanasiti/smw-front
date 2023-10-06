@@ -4,6 +4,8 @@ import { currentUserInfo, signIn } from '../../../api/authApi';
 import { isError } from '../../../helpers/errorHelpers';
 import { LoginRequest } from '../../../types/apiTypes/auth';
 import { AppDispatch } from '../../store';
+import { clearData as clearCreditCardsData } from '../creditCards';
+import { clearData as clearExpensesData } from '../expenses';
 
 export const loginUser = (userCredentials: LoginRequest) => {
     return async (dispatch: AppDispatch) => {
@@ -26,6 +28,8 @@ export const logoutUser = () => {
         try {
             localStorage.removeItem('token');
             dispatch(logout());
+            dispatch(clearCreditCardsData())
+            dispatch(clearExpensesData())
         } catch (error) {
             console.error(error);
         }

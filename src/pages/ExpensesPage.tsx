@@ -5,11 +5,11 @@ import { defaultExpense } from '../helpers/defaultValues';
 import { Expense } from '../types/expenses';
 import { ExpenseModal } from '../components/expenses/ExpenseModal';
 import { ExpenseTable } from '../components/expenses/ExpenseTable';
+import { selectActiveExpenses } from '../helpers/selector.helpers';
 
 export const ExpensesPage = () => {
-    const expenses = useAppSelector(({ expensesState }) =>
-        expensesState.expenses.filter(expense => expense.type === 'subscription' || expense.remainingInstallment > 0),
-    );
+    const expenses = useAppSelector(status => selectActiveExpenses(status));
+    
     const [showModal, setShowModal] = useState<boolean>(false);
     const [selectedExpense, setSelectedExpense] = useState<Expense>({ ...defaultExpense });
 

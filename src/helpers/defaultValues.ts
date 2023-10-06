@@ -30,6 +30,7 @@ export const defaultExpense: Expense = {
 
 export const defaultPeriod: Period = {
     name: '',
+    status: 'open',
     payments: [],
 };
 
